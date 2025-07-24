@@ -4,7 +4,7 @@ export default function Contact() {
       <h1 className="text-4xl font-extrabold mb-6">📞 Contact Us</h1>
 
       <p className="text-lg mb-6 text-gray-300">
-        We'd love to hear from you! Reach out for any career help, questions, or collaborations. 💼🤝
+        We did love to hear from you! Reach out for any career help, questions, or collaborations. 💼🤝
       </p>
 
       <div className="bg-white/10 p-6 rounded-2xl shadow-lg space-y-4 text-white backdrop-blur-md">
