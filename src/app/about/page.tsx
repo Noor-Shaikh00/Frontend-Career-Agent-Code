@@ -10,8 +10,8 @@ const AboutPage = () => {
 
         <p className="text-lg mb-6">
           Welcome to <span className="font-semibold">Career Helper</span> – your AI-powered companion
-          in choosing the best path for your future! 🚀 Whether you're confused between fields,
-          struggling to make a career switch, or just need a helpful suggestion — we've got you covered!
+          in choosing the best path for your future! 🚀 Whether youare confused between fields,
+          struggling to make a career switch, or just need a helpful suggestion — we will got you covered!
         </p>
 
         <p className="text-lg mb-6">
