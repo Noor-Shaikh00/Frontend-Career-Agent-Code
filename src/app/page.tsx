@@ -1,52 +1,55 @@
-import { NextResponse } from 'next/server';
+'use client';
+import { useState } from 'react';
 
-const ULTRAMSG_INSTANCE_ID = 'instance133849';
-const ULTRAMSG_TOKEN = 'troeknjq2qhgqxqkkell8f';
-const ULTRAMSG_BASE_URL = `https://api.ultramsg.com/${ULTRAMSG_INSTANCE_ID}/messages/chat`;
-const OWNER_NUMBER = '923303917931';
+export default function HomePage() {
+  const [formData, setFormData] = useState({
+    name: '',
+    age: '',
+    qualification: '',
+    gender: '',
+    phone: '',
+  });
 
-export async function POST(req: Request) {
-  try {
-    const body = await req.json();
-    const { name, age, qualification, gender, phone } = body;
+  const [status, setStatus] = useState('');
 
-    if (!name || !age || !qualification || !gender || !phone) {
-      return NextResponse.json({ success: false, error: 'All fields are required.' }, { status: 400 });
-    }
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
-    const suggestionMessage = `🎓 Hello ${name}!\nBased on your qualification (${qualification}), we suggest you explore exciting career paths! 🚀\nStay tuned! 😊`;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatus('Sending... 📤');
 
-    const leadMessage = `📥 New Lead Received:\n👤 Name: ${name}\n🎂 Age: ${age}\n🎓 Qualification: ${qualification}\n🚻 Gender: ${gender}\n📱 Phone: ${phone}`;
-
-    // Send WhatsApp to User
-    const userRes = await fetch(ULTRAMSG_BASE_URL, {
+    const res = await fetch('/api/submit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        token: ULTRAMSG_TOKEN,
-        to: phone,
-        body: suggestionMessage,
-      }),
+      body: JSON.stringify(formData),
     });
 
-    // Send WhatsApp to Noor
-    const ownerRes = await fetch(ULTRAMSG_BASE_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        token: ULTRAMSG_TOKEN,
-        to: OWNER_NUMBER,
-        body: leadMessage,
-      }),
-    });
+    const data = await res.json();
 
-    if (!userRes.ok || !ownerRes.ok) {
-      throw new Error('Failed to send WhatsApp messages.');
+    if (data.success) {
+      setStatus('✅ Sent successfully on WhatsApp!');
+    } else {
+      setStatus('❌ Failed to send: ' + data.error);
     }
+  };
 
-    return NextResponse.json({ success: true });
-  } catch (error: string) {
-    console.error('💥 Error sending message:', error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
-  }
+  return (
+    <div style={{ maxWidth: '500px', margin: '50px auto', fontFamily: 'sans-serif' }}>
+      <h1 style={{ fontSize: '24px', marginBottom: '20px' }}>Career Guidance Form 🎓</h1>
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        <input type="text" name="name" placeholder="👤 Name" onChange={handleChange} required />
+        <input type="text" name="age" placeholder="🎂 Age" onChange={handleChange} required />
+        <input type="text" name="qualification" placeholder="📚 Qualification" onChange={handleChange} required />
+        <input type="text" name="gender" placeholder="🚻 Gender" onChange={handleChange} required />
+        <input type="text" name="phone" placeholder="📱 Phone (with country code)" onChange={handleChange} required />
+        <button type="submit" style={{ padding: '10px', background: '#0070f3', color: 'white', border: 'none', borderRadius: '5px' }}>
+          Send to WhatsApp 🚀
+        </button>
+      </form>
+      <p style={{ marginTop: '15px', color: '#333' }}>{status}</p>
+    </div>
+  );
 }
+
