@@ -45,8 +45,14 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ success: true });
-  } catch (error: string) {
+  } catch (error: unknown) {
     console.error('💥 Error sending message:', error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+
+    let errorMessage = 'Something went wrong.';
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+
+    return NextResponse.json({ success: false, error: errorMessage }, { status: 500 });
   }
 }
