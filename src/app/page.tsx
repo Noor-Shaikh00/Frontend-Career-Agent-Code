@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, ChangeEvent, FormEvent } from 'react';
 
 export default function HomePage() {
   const [formData, setFormData] = useState({
@@ -12,26 +12,30 @@ export default function HomePage() {
 
   const [status, setStatus] = useState('');
 
-  const handleChange = (e) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setStatus('Sending... 📤');
 
-    const res = await fetch('/api/submit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData),
-    });
+    try {
+      const res = await fetch('/api/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (data.success) {
-      setStatus('✅ Sent successfully on WhatsApp!');
-    } else {
-      setStatus('❌ Failed to send: ' + data.error);
+      if (data.success) {
+        setStatus('✅ Sent successfully on WhatsApp!');
+      } else {
+        setStatus('❌ Failed to send: ' + data.error);
+      }
+    } catch (err) {
+      setStatus('❌ Error while sending!');
     }
   };
 
@@ -44,7 +48,16 @@ export default function HomePage() {
         <input type="text" name="qualification" placeholder="📚 Qualification" onChange={handleChange} required />
         <input type="text" name="gender" placeholder="🚻 Gender" onChange={handleChange} required />
         <input type="text" name="phone" placeholder="📱 Phone (with country code)" onChange={handleChange} required />
-        <button type="submit" style={{ padding: '10px', background: '#0070f3', color: 'white', border: 'none', borderRadius: '5px' }}>
+        <button
+          type="submit"
+          style={{
+            padding: '10px',
+            background: '#0070f3',
+            color: 'white',
+            border: 'none',
+            borderRadius: '5px',
+          }}
+        >
           Send to WhatsApp 🚀
         </button>
       </form>
@@ -52,4 +65,3 @@ export default function HomePage() {
     </div>
   );
 }
-
